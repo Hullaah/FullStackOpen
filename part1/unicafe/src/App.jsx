@@ -1,34 +1,66 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>give feedback </h1>
+      <Button text="good" onClick={() => setGood(good + 1)} />
+      <Button text="neutral" onClick={() => setNeutral(neutral + 1)} />
+      <Button text="bad" onClick={() => setBad(bad + 1)} />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </>
+  )
+}
+
+
+function Button({ text, onClick }) {
+  return (
+    <button onClick={onClick}> {text} </button>
+  )
+}
+
+function Statistics(props) {
+  const feedbackGiven = Boolean(props.good && props.neutral && props.bad)
+
+  return (
+    <>
+      <h1> statistics </h1>
+      {feedbackGiven ? <table><StatisticsFeedBack {...props} /></table> : <NoFeedBack />}
+    </>
+  )
+}
+
+function StatisticsFeedBack({ good, neutral, bad }) {
+  const total = good + neutral + bad;
+  const average = (good - bad) / total;
+  const positivePercentage = (good / total) * 100;
+
+  return (
+    <tbody>
+      <StatisticsLine text='good' value={good} />
+      <StatisticsLine text='neutral' value={neutral} />
+      <StatisticsLine text='bad' value={bad} />
+      <StatisticsLine text='all' value={total} />
+      <StatisticsLine text='average' value={average} />
+      <StatisticsLine text='positive' value={positivePercentage} />
+    </tbody>
+  )
+}
+
+function NoFeedBack() {
+  return <p>No feedback given</p>
+}
+
+function StatisticsLine({ text, value }) {
+  return (
+    <tr>
+      <td> {text} </td>
+      <td> {value} </td>
+    </tr>
   )
 }
 
