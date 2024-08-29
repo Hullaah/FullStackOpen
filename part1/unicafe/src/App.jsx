@@ -24,7 +24,7 @@ function Button({ text, onClick }) {
 }
 
 function Statistics(props) {
-  const feedbackGiven = Boolean(props.good && props.neutral && props.bad)
+  const feedbackGiven = Boolean(props.good || props.neutral || props.bad)
 
   return (
     <>
