@@ -1,34 +1,49 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-1234567' }
+  ])
+  const [newName, setNewName] = useState('')
+  const [number, setNumber] = useState('')
+  const [filterText, setFilterText] = useState('')
+
+  function addPerson(e) {
+    e.preventDefault()
+    console.log(persons)
+    if (persons.findIndex(person => person.name === newName) != -1) {
+      alert(`${newName} is already added to the phonebook`)
+      return
+    }
+    setPersons(
+      [
+        ...persons,
+        { name: newName, number }
+      ]
+    )
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <h2>Phonebook</h2>
+
+      <Filter onChange={e => setFilterText(e.target.value)} />
+
+      <h3>Add a new</h3>
+
+      <PersonForm
+        onSubmit={addPerson}
+        onNameChange={e => setNewName(e.target.value)}
+        onNumberChange={e => setNumber(e.target.value)}
+      />
+
+      <h3>Numbers</h3>
+
+      <Persons persons={persons} filterText={filterText} />
+    </div >
   )
 }
 
