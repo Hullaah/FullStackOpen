@@ -1,30 +1,41 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import personService from './services/persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567' }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [number, setNumber] = useState('')
   const [filterText, setFilterText] = useState('')
 
   function addPerson(e) {
     e.preventDefault()
-    console.log(persons)
-    if (persons.findIndex(person => person.name === newName) != -1) {
-      alert(`${newName} is already added to the phonebook`)
+
+    let i = persons.findIndex(person => person.name === newName)
+    if (i != -1) {
+      const confirmUpdate = confirm(
+        `${persons[i].name} is already added to phonebook, replace the old number with a new one?`
+      )
+      if (confirmUpdate)
+        personService
+          .update(persons[i].id, { name: newName, number })
+          .then(response => setPersons(persons.filter(person => person.id != persons[i].id).concat(response.data)))
       return
     }
-    setPersons(
-      [
-        ...persons,
-        { name: newName, number }
-      ]
-    )
+
+    (async () => {
+      const response = await personService.create({ name: newName, number })
+      setPersons([...persons, response.data])
+    })()
   }
+
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(response => setPersons(response.data))
+  }, [])
 
   return (
     <div>
@@ -42,7 +53,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={persons} filterText={filterText} />
+      <Persons persons={persons} setPersons={setPersons} filterText={filterText} />
     </div >
   )
 }
